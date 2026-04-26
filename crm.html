@@ -279,7 +279,7 @@ function filtrarPacientes(){
 
 async function cargarMedicos(){
 
-    const res = await fetch("http://127.0.0.1:8000/leads/medicos",{
+    const res = await fetch("https://vasagio-production.up.railway.app/leads/medicos",{
         headers:{authorization:auth}
     });
 
@@ -289,7 +289,7 @@ async function cargarMedicos(){
 
 async function cargarPacientes(){
 
-    const res = await fetch("http://127.0.0.1:8000/leads/pacientes",{
+    const res = await fetch("https://vasagio-production.up.railway.app/leads/pacientes",{
         headers:{authorization:auth}
     });
 

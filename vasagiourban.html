@@ -196,7 +196,7 @@ document.getElementById("pacienteForm").addEventListener("submit", async functio
 
     try {
 
-        const res = await fetch("http://127.0.0.1:8000/paciente", {
+        const res = await fetch("https://vasagio-production.up.railway.app/medico", {
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify(data)
