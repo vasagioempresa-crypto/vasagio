@@ -1,0 +1,139 @@
+<!DOCTYPE html> 
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>VASAGIO | Colaboración Médica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="nav-container">
+
+<div class="logo">
+    <a href="index.html">
+        <img src="assets/images/logo.png" alt="VASAGIO Logo">
+    </a>
+</div>
+
+    <nav>
+        <a href="index.html">Inicio</a>
+    </nav>
+
+</div>
+</header>
+
+<section class="hero">
+<div class="hero-container">
+
+    <div class="hero-content">
+
+        <h1>Colaboración con VASAGIO</h1>
+
+        <p class="subheadline">
+        Integra tecnología protésica de alto desempeño en tu clínica sin depender de importaciones.
+        </p>
+
+        <p class="credibility">
+        Buscamos médicos y clínicas para distribución, validación clínica y desarrollo conjunto.
+        </p>
+
+    </div>
+
+    <div class="hero-visual">
+        <img src="assets/renders/doctor2.png">
+    </div>
+
+</div>
+</section>
+
+<section class="lead-form">
+<div class="container">
+
+    <h2>Solicitud de colaboración</h2>
+
+    <form id="medicoForm">
+
+        <input name="nombre" placeholder="Nombre del doctor" required>
+        <input name="clinica" placeholder="Nombre de la clínica" required>
+        <input type="email" name="email" placeholder="Correo electrónico" required>
+        <input name="telefono" placeholder="Teléfono (10 dígitos)" required>
+
+        <select name="interes" required>
+            <option value="">Selecciona tu interés</option>
+            <option value="distribucion">Distribución</option>
+            <option value="lote">Lote</option>
+            <option value="alianza">Alianza</option>
+        </select>
+
+        <textarea name="mensaje"></textarea>
+
+        <button type="submit" class="primary">Enviar solicitud</button>
+
+    </form>
+
+    <p id="msgMedico" style="margin-top:20px;"></p>
+
+</div>
+</section>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    console.log("Script cargado correctamente");
+
+    const form = document.getElementById("medicoForm");
+    const msg = document.getElementById("msgMedico");
+
+    if (!form) {
+        console.error("Formulario NO encontrado");
+        return;
+    }
+
+    form.addEventListener("submit", async (e) => {
+
+        e.preventDefault();
+
+        msg.innerText = "Enviando...";
+
+        const data = Object.fromEntries(new FormData(form).entries());
+
+        console.log("Datos enviados:", data);
+
+        try {
+
+            const res = await fetch("http://127.0.0.1:8000/medico", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            console.log("Respuesta:", result);
+
+            if (!res.ok) {
+                msg.innerText = "❌ " + (result.detail?.[0]?.msg || "Error en datos");
+                return;
+            }
+
+            msg.innerText = "✔ Solicitud enviada correctamente";
+            form.reset();
+
+        } catch (error) {
+            console.error("Error:", error);
+            msg.innerText = "❌ Error conectando con servidor";
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

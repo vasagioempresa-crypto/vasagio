@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>VASAGIO CRM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
+
+<style>
+table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+th { background: #1f6feb; color: white; }
+
+.alto {color: red; font-weight: bold;}
+.medio {color: orange; font-weight: bold;}
+.bajo {color: gray;}
+.contactado { color: green; font-weight: bold; }
+
+.filtros { margin-top: 20px; display: flex; gap: 10px; }
+
+button.small {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<header class="navbar">
+<div class="nav-container">
+<div class="logo">
+<a href="index.html">
+<img src="assets/images/logo.png">
+</a>
+</div>
+<nav>
+<a href="index.html">Inicio</a>
+</nav>
+</div>
+</header>
+
+<section class="container">
+
+<h2>Leads Médicos</h2>
+
+<div class="filtros">
+<input id="buscarMedicos" placeholder="Buscar médico...">
+<select id="filtroMedicos">
+<option value="">Todas prioridades</option>
+<option value="ALTO">ALTO</option>
+<option value="MEDIO">MEDIO</option>
+<option value="BAJO">BAJO</option>
+</select>
+<button onclick="exportarCSV(medicosData,'medicos')" class="primary">Exportar</button>
+</div>
+
+<table id="tablaMedicos">
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Clínica</th>
+<th>Email</th>
+<th>Teléfono</th>
+<th>Prioridad</th>
+<th>Estado</th>
+<th>Fecha</th>
+<th>Acción</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h2>Leads Pacientes</h2>
+
+<div class="filtros">
+<input id="buscarPacientes" placeholder="Buscar paciente...">
+<select id="filtroPacientes">
+<option value="">Todas prioridades</option>
+<option value="ALTO">ALTO</option>
+<option value="MEDIO">MEDIO</option>
+<option value="BAJO">BAJO</option>
+</select>
+<button onclick="exportarCSV(pacientesData,'pacientes')" class="primary">Exportar</button>
+</div>
+
+<table id="tablaPacientes">
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Email</th>
+<th>Talla</th>
+<th>Movilidad</th>
+<th>Prioridad</th>
+<th>Estado</th>
+<th>Fecha</th>
+<th>Acción</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</section>
+
+<script>
+
+// 🔐 LOGIN
+const auth = localStorage.getItem("auth");
+if (!auth) window.location.href = "login.html";
+
+// 🔥 VARIABLES
+let medicosData = [];
+let pacientesData = [];
+
+// ======================
+// ACTUALIZAR ESTADO
+// ======================
+
+async function marcarContactado(tipo, index){
+
+    await fetch(`http://127.0.0.1:8000/leads/actualizar?tipo=${tipo}&index=${index}`,{
+        method:"PUT"
+    });
+
+    if(tipo === "medicos") await cargarMedicos();
+    else await cargarPacientes();
+}
+
+// ======================
+// EXPORTAR CSV
+// ======================
+
+function exportarCSV(data, nombre){
+
+    if(data.length === 0){
+        alert("No hay datos para exportar");
+        return;
+    }
+
+    let csv = Object.keys(data[0]).join(",") + "\n";
+
+    data.forEach(d => {
+        csv += Object.values(d).join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], {type:"text/csv"});
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nombre + ".csv";
+    a.click();
+}
+
+// ======================
+// RENDER MÉDICOS
+// ======================
+
+function renderMedicos(lista){
+
+    const tbody = document.querySelector("#tablaMedicos tbody");
+    tbody.innerHTML = "";
+
+    lista.forEach((m) => {
+
+        const prioridad = (m.prioridad || "BAJO");
+        const estado = m.estado || "NUEVO";
+        const indexOriginal = medicosData.indexOf(m);
+
+        tbody.innerHTML += `
+        <tr>
+        <td>${m.nombre}</td>
+        <td>${m.clinica}</td>
+        <td>${m.email}</td>
+        <td>${m.telefono}</td>
+        <td class="${prioridad.toLowerCase()}">${prioridad}</td>
+        <td class="${estado==='CONTACTADO'?'contactado':''}">
+            ${estado}
+        </td>
+        <td>${m.fecha}</td>
+        <td>
+            <button class="small" onclick="marcarContactado('medicos', ${indexOriginal})">
+            Contactado
+            </button>
+        </td>
+        </tr>`;
+    });
+}
+
+// ======================
+// RENDER PACIENTES
+// ======================
+
+function renderPacientes(lista){
+
+    const tbody = document.querySelector("#tablaPacientes tbody");
+    tbody.innerHTML = "";
+
+    lista.forEach((p) => {
+
+        const prioridad = (p.prioridad || "BAJO");
+        const estado = p.estado || "NUEVO";
+        const indexOriginal = pacientesData.indexOf(p);
+
+        tbody.innerHTML += `
+        <tr>
+        <td>${p.nombre}</td>
+        <td>${p.email}</td>
+        <td>${p.talla}</td>
+        <td>${p.movilidad}</td>
+        <td class="${prioridad.toLowerCase()}">${prioridad}</td>
+        <td class="${estado==='CONTACTADO'?'contactado':''}">
+            ${estado}
+        </td>
+        <td>${p.fecha}</td>
+        <td>
+            <button class="small" onclick="marcarContactado('pacientes', ${indexOriginal})">
+            Contactado
+            </button>
+        </td>
+        </tr>`;
+    });
+}
+
+// ======================
+// FILTROS
+// ======================
+
+function filtrarMedicos(){
+
+    const texto = buscarMedicos.value.toLowerCase();
+    const prioridad = filtroMedicos.value;
+
+    const filtrados = medicosData.filter(m => {
+
+        const p = m.prioridad || "BAJO";
+
+        const coincideTexto =
+            m.nombre.toLowerCase().includes(texto) ||
+            m.email.toLowerCase().includes(texto) ||
+            m.clinica.toLowerCase().includes(texto);
+
+        const coincidePrioridad =
+            prioridad === "" || p === prioridad;
+
+        return coincideTexto && coincidePrioridad;
+    });
+
+    renderMedicos(filtrados);
+}
+
+function filtrarPacientes(){
+
+    const texto = buscarPacientes.value.toLowerCase();
+    const prioridad = filtroPacientes.value;
+
+    const filtrados = pacientesData.filter(p => {
+
+        const pr = p.prioridad || "BAJO";
+
+        const coincideTexto =
+            p.nombre.toLowerCase().includes(texto) ||
+            p.email.toLowerCase().includes(texto);
+
+        const coincidePrioridad =
+            prioridad === "" || pr === prioridad;
+
+        return coincideTexto && coincidePrioridad;
+    });
+
+    renderPacientes(filtrados);
+}
+
+// ======================
+// FETCH
+// ======================
+
+async function cargarMedicos(){
+
+    const res = await fetch("http://127.0.0.1:8000/leads/medicos",{
+        headers:{authorization:auth}
+    });
+
+    medicosData = await res.json();
+    renderMedicos(medicosData);
+}
+
+async function cargarPacientes(){
+
+    const res = await fetch("http://127.0.0.1:8000/leads/pacientes",{
+        headers:{authorization:auth}
+    });
+
+    pacientesData = await res.json();
+    renderPacientes(pacientesData);
+}
+
+// ======================
+// EVENTOS
+// ======================
+
+buscarMedicos.oninput = filtrarMedicos;
+filtroMedicos.onchange = filtrarMedicos;
+
+buscarPacientes.oninput = filtrarPacientes;
+filtroPacientes.onchange = filtrarPacientes;
+
+// ======================
+// INIT
+// ======================
+
+window.onload = async () => {
+
+    buscarMedicos.value = "";
+    buscarPacientes.value = "";
+
+    filtroMedicos.value = "";
+    filtroPacientes.value = "";
+
+    await cargarMedicos();
+    await cargarPacientes();
+};
+
+</script>
+
+</body>
+</html>

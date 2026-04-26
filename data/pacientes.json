@@ -1,0 +1,117 @@
+[
+    {
+        "nombre": "Paciente Prueba",
+        "email": "pacienteprueba@gmail.com",
+        "talla": "mediana",
+        "movilidad": "V3",
+        "mensaje": "Quiero utilizar una protesis VASAGIO URBAN de prueba",
+        "estado": "CONTACTADO"
+    },
+    {
+        "nombre": "Segunda Prueba",
+        "email": "segundapruebapaciente@gmail.com",
+        "talla": "grande",
+        "movilidad": "V5",
+        "mensaje": "Quiero realizar una segunda prueba de VASAGIO Urban",
+        "estado": "CONTACTADO"
+    },
+    {
+        "nombre": "Paciente Prueba 3",
+        "email": "pacienteprueba3@gmail.com",
+        "talla": "mediana",
+        "movilidad": "V4",
+        "mensaje": "Estoy haciendo la prueba 3 de Paciente",
+        "fecha": "2026-04-24 16:40:02",
+        "estado": "CONTACTADO"
+    },
+    {
+        "nombre": "Paciente Prueba Correo",
+        "email": "pacientepruebacorreo@gmail.com",
+        "talla": "chica",
+        "movilidad": "V2",
+        "mensaje": "El caso de la solicitud paciente prueba ",
+        "fecha": "2026-04-24 19:39:12"
+    },
+    {
+        "nombre": "paciente crm",
+        "email": "pacientecrm@gmail.com",
+        "talla": "mediana",
+        "movilidad": "V5",
+        "mensaje": "crm alto",
+        "prioridad": "ALTO",
+        "fecha": "2026-04-25 00:45:07"
+    },
+    {
+        "nombre": "prueba login",
+        "email": "logi@gmail.com",
+        "talla": "chica",
+        "movilidad": "V1",
+        "mensaje": "prioridad baja prueba despues de login",
+        "prioridad": "BAJO",
+        "fecha": "2026-04-25 00:56:53"
+    },
+    {
+        "nombre": "prueba login",
+        "email": "logi@gmail.com",
+        "talla": "chica",
+        "movilidad": "V1",
+        "mensaje": "prioridad baja prueba despues de login",
+        "prioridad": "BAJO",
+        "fecha": "2026-04-25 00:56:55"
+    },
+    {
+        "nombre": "PacientedespuesdeLogin",
+        "email": "login@gmail.com",
+        "talla": "grande",
+        "movilidad": "V1",
+        "mensaje": "Prioridad Baja despues de login paciente",
+        "prioridad": "BAJO",
+        "fecha": "2026-04-25 00:57:46"
+    },
+    {
+        "nombre": "PacientedespuesdeLogin",
+        "email": "login@gmail.com",
+        "talla": "grande",
+        "movilidad": "V1",
+        "mensaje": "Prioridad Baja despues de login paciente",
+        "prioridad": "BAJO",
+        "fecha": "2026-04-25 00:57:47"
+    },
+    {
+        "nombre": "PacientedespuesdeLogin",
+        "email": "login@gmail.com",
+        "talla": "grande",
+        "movilidad": "V1",
+        "mensaje": "Prioridad Baja despues de login paciente",
+        "prioridad": "BAJO",
+        "fecha": "2026-04-25 00:57:49"
+    },
+    {
+        "nombre": "Prueba repeticion",
+        "email": "pruebareptecicion@gmail.com",
+        "talla": "mediana",
+        "movilidad": "V3",
+        "mensaje": "Prueba para chequeo de repeticion o duplicacion de solicitud enviada",
+        "prioridad": "MEDIO",
+        "fecha": "2026-04-25 00:58:47",
+        "estado": "CONTACTADO"
+    },
+    {
+        "nombre": "nueva prueba ",
+        "email": "todoscrm@gmail.com",
+        "talla": "chica",
+        "movilidad": "V2",
+        "mensaje": "Prueba crm",
+        "prioridad": "MEDIO",
+        "fecha": "2026-04-25 01:21:25"
+    },
+    {
+        "nombre": "Alto",
+        "email": "alto@gmail.com",
+        "talla": "chica",
+        "movilidad": "V5",
+        "mensaje": "paciente alto \n",
+        "prioridad": "ALTO",
+        "fecha": "2026-04-25 01:27:11"
+    }
+]

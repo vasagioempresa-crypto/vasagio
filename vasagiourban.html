@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>VASAGIO | Recupera tu movilidad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<header class="navbar">
+    <div class="nav-container">
+
+    <div class="logo">
+        <a href="index.html">
+            <img src="assets/images/logo.png" alt="VASAGIO Logo">
+        </a>
+    </div>
+
+    <nav>
+        <a href="index.html">Inicio</a>
+    </nav>
+
+</div>
+
+</header>
+
+<!-- HERO PRODUCTO -->
+
+<section class="hero">
+
+<div class="hero-container">
+
+    <div class="hero-content">
+
+        <h1>VASAGIO Urban V.1.0</h1>
+
+        <p class="subheadline">
+        Pie protésico de fibra de carbono diseñado para devolver energía en cada paso.
+        </p>
+
+        <p class="credibility">
+        Optimizado para mejorar tu movilidad, reducir fatiga y recuperar independencia.
+        </p>
+
+    </div>
+
+    <div class="hero-visual">
+
+        <div class="slider">
+
+            <img src="assets/renders/render2.png" class="slide active">
+            <img src="assets/renders/render3.png" class="slide">
+            <img src="assets/renders/render4.png" class="slide">
+
+            <button class="prev">&#10094;</button>
+            <button class="next">&#10095;</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+<!-- DESCRIPCIÓN -->
+
+<section class="solution">
+    <div class="container">
+
+    <h2>Diseñado para movimiento real</h2>
+
+    <p>
+    El modelo VASAGIO Urban V.1.0 utiliza fibra de carbono para almacenar y liberar energía en cada paso,
+    permitiendo una caminata más natural, eficiente y cómoda.
+    </p>
+
+</div>
+
+</section>
+
+<!-- MOVILIDAD -->
+
+<section class="problem">
+    <div class="container">
+
+    <h2>Niveles de movilidad</h2>
+
+    <p><b>V1:</b> Movilidad básica (uso en casa)</p>
+    <p><b>V2:</b> Caminata funcional diaria</p>
+    <p><b>V3:</b> Actividad moderada</p>
+    <p><b>V4:</b> Alta actividad</p>
+    <p><b>V5:</b> Uso deportivo</p>
+
+</div>
+
+</section>
+
+<!-- FORMULARIO -->
+
+<section class="lead-form">
+
+<div class="container">
+
+    <h2>Solicita tu evaluación</h2>
+
+    <p class="form-subtext">
+    Déjanos tus datos para recomendarte la mejor configuración.
+    </p>
+
+    <form id="pacienteForm">
+
+        <input name="nombre" placeholder="Nombre completo" required>
+
+        <input type="email" name="email" placeholder="Correo electrónico" required>
+
+        <select name="talla" required>
+            <option value="">Selecciona tu talla</option>
+            <option value="chica">Chica</option>
+            <option value="mediana">Mediana</option>
+            <option value="grande">Grande</option>
+        </select>
+
+        <select name="movilidad" required>
+            <option value="">Nivel de movilidad</option>
+            <option value="V1">V1</option>
+            <option value="V2">V2</option>
+            <option value="V3">V3</option>
+            <option value="V4">V4</option>
+            <option value="V5">V5</option>
+        </select>
+
+        <textarea name="mensaje" placeholder="Cuéntanos tu caso"></textarea>
+
+        <button type="submit" class="primary">Enviar solicitud</button>
+
+    </form>
+
+    <p id="msgPaciente"></p>
+
+</div>
+
+</section>
+
+<!-- SCRIPT -->
+
+<script>
+
+// SLIDER
+const slides = document.querySelectorAll(".slide");
+let current = 0;
+
+function showSlide(index){
+
+    slides.forEach((slide)=>{
+        slide.classList.remove("active");
+    });
+
+    setTimeout(()=>{
+        slides[index].classList.add("active");
+    }, 50);
+}
+
+// SIGUIENTE
+document.querySelector(".next").addEventListener("click", ()=>{
+    current = (current + 1) % slides.length;
+    showSlide(current);
+});
+
+// ANTERIOR
+document.querySelector(".prev").addEventListener("click", ()=>{
+    current = (current - 1 + slides.length) % slides.length;
+    showSlide(current);
+});
+
+// CLICK EN IMAGEN
+slides.forEach((slide)=>{
+    slide.addEventListener("click", ()=>{
+        current = (current + 1) % slides.length;
+        showSlide(current);
+    });
+});
+
+
+// FORMULARIO
+document.getElementById("pacienteForm").addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const data = Object.fromEntries(new FormData(this).entries());
+
+    try {
+
+        const res = await fetch("http://127.0.0.1:8000/paciente", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        document.getElementById("msgPaciente").innerText = result.message;
+
+        this.reset();
+
+    } catch {
+        document.getElementById("msgPaciente").innerText = "✔ Hemos recibido tu información. Nuestro equipo te contactará.";
+    }
+
+});
+
+</script>
+
+</body>
+</html>

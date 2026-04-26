@@ -1,0 +1,80 @@
+[
+    {
+        "nombre": "Prueba Doctor",
+        "email": "pruebadoctor@gmail.com",
+        "telefono": "2222222222",
+        "clinica": "Clinca Prueba",
+        "interes": "distribucion",
+        "mensaje": "Me interesa distribuir los productos de VASAGIO Urban en mi Clinica Prueba soy de Queretaro",
+        "estado": "CONTACTADO"
+    },
+    {
+        "nombre": "Segunda Prueba Doctor",
+        "email": "segundapruebadoctor@gmail.com",
+        "telefono": "3333333333",
+        "clinica": "Clinica Segunda Prueba",
+        "interes": "lote",
+        "mensaje": "Quiero solicitar un lote de segunda prueba.",
+        "estado": "CONTACTADO"
+    },
+    {
+        "nombre": "Prueba 3 ",
+        "email": "pruebatres@gmail.com",
+        "telefono": "4423820894",
+        "clinica": "Clinica Prueba 3",
+        "interes": "distribucion",
+        "mensaje": "Me interesa distribuir Prueba 3",
+        "fecha": "2026-04-24 16:38:56"
+    },
+    {
+        "nombre": "Prueba Correo",
+        "email": "pruebacorreo@gmail.com",
+        "telefono": "4429875245",
+        "clinica": "Clinica Prueba Correo",
+        "interes": "distribucion",
+        "mensaje": "Distribucion. Prueba con Correo vasagioempresa@gmail.com\n",
+        "fecha": "2026-04-24 19:38:23"
+    },
+    {
+        "nombre": "Colaboracion alta",
+        "email": "colaboracionaltadoctor@gmail.com",
+        "telefono": "2222222222",
+        "clinica": "clinica colaboracion alta",
+        "interes": "distribucion",
+        "mensaje": "Distribucion colaboracion nivel alto",
+        "prioridad": "MEDIO",
+        "fecha": "2026-04-24 19:50:45",
+        "estado": "CONTACTADO"
+    },
+    {
+        "nombre": "Colabracion media",
+        "email": "colaboracionmediadoctor@gmail.com",
+        "telefono": "2222222222",
+        "clinica": "Clinica colaboracion media",
+        "interes": "lote",
+        "mensaje": "Colaboracion de interes Lote",
+        "prioridad": "ALTO",
+        "fecha": "2026-04-24 19:51:27"
+    },
+    {
+        "nombre": "Colaboracion baja",
+        "email": "colaboracionmediadoctor@gmail.com",
+        "telefono": "3333333333",
+        "clinica": "Clinica Colaboracion baja",
+        "interes": "alianza",
+        "mensaje": "Colaboracion Alianza baja",
+        "prioridad": "MEDIO",
+        "fecha": "2026-04-24 19:52:14"
+    },
+    {
+        "nombre": "crm",
+        "email": "crm@gmail.com",
+        "telefono": "4444444444",
+        "clinica": "clinica crm",
+        "interes": "lote",
+        "mensaje": "crm alto\n",
+        "prioridad": "ALTO",
+        "fecha": "2026-04-25 00:44:32",
+        "estado": "CONTACTADO"
+    }
+]

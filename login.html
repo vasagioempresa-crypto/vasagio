@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>VASAGIO | Acceso CRM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="navbar">
+<div class="nav-container">
+<div class="logo">
+<a href="index.html">
+<img src="assets/images/logo.png">
+</a>
+</div>
+<nav>
+<a href="index.html">Inicio</a>
+</nav>
+</div>
+</header>
+
+<section class="container">
+
+<h2>Acceso al CRM VASAGIO</h2>
+
+<p class="form-subtext">
+Acceso restringido únicamente para administración interna.
+</p>
+
+<div style="max-width:400px; margin:auto;">
+
+<input id="user" placeholder="Usuario" required>
+
+<input id="pass" type="password" placeholder="Contraseña" required>
+
+<button onclick="login()" class="primary" style="margin-top:15px;">
+Entrar
+</button>
+
+<p id="msg" style="margin-top:15px;"></p>
+
+</div>
+
+</section>
+
+<script>
+
+function login() {
+
+    const user = document.getElementById("user").value;
+    const pass = document.getElementById("pass").value;
+
+    // ⚠️ DEBE COINCIDIR CON main.py
+    if(user === "admin" && pass === "vasagio123") {
+
+        const token = user + ":" + pass;
+
+        localStorage.setItem("auth", token);
+
+        window.location.href = "crm.html";
+
+    } else {
+
+        document.getElementById("msg").innerText = "❌ Credenciales incorrectas";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
