@@ -5,36 +5,44 @@ from datetime import datetime
 import json
 import os
 import re
-import smtplib
-from email.mime.text import MIMEText
+import requests
 
 app = FastAPI()
 
 # =========================
-# CONFIGURACIÓN EMAIL (PRODUCCIÓN)
+# CONFIGURACIÓN EMAIL (RESEND)
 # =========================
 
-EMAIL_USER = os.getenv("EMAIL_USER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+EMAIL_USER = os.getenv("EMAIL_USER")  # tu correo destino
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 
-if not EMAIL_USER or not EMAIL_PASSWORD:
-    raise Exception("Faltan variables de entorno EMAIL_USER o EMAIL_PASSWORD")
+if not EMAIL_USER:
+    raise Exception("Falta variable de entorno EMAIL_USER")
+
+if not RESEND_API_KEY:
+    raise Exception("Falta variable de entorno RESEND_API_KEY")
+
 
 def enviar_email(asunto, contenido):
     try:
-        msg = MIMEText(contenido)
-        msg["Subject"] = asunto
-        msg["From"] = EMAIL_USER
-        msg["To"] = EMAIL_USER
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": "VASAGIO <onboarding@resend.dev>",
+                "to": [EMAIL_USER],
+                "subject": asunto,
+                "html": f"<pre>{contenido}</pre>"
+            }
+        )
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(EMAIL_USER, EMAIL_PASSWORD)
-            server.send_message(msg)
-
-        print("EMAIL ENVIADO CORRECTAMENTE")
+        print("RESPUESTA RESEND:", response.text)
 
     except Exception as e:
-        print("ERROR EMAIL:", str(e))
+        print("ERROR EMAIL RESEND:", str(e))
 
 
 # =========================
