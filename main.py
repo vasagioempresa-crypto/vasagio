@@ -1,11 +1,13 @@
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, EmailStr, field_validator
 from datetime import datetime
 import json
 import os
 import re
 import requests
+import secrets
 
 app = FastAPI()
 
@@ -76,15 +78,25 @@ def enviar_email_usuario(destino, asunto, contenido):
 
 
 # =========================
-# 🔐 AUTENTICACIÓN CRM
+# 🔐 AUTENTICACIÓN CRM SEGURA
 # =========================
 
-USERNAME = "admin"
-PASSWORD = "vasagio123"
+USERNAME = os.getenv("CRM_USER")
+PASSWORD = os.getenv("CRM_PASS")
 
-def verificar_auth(auth: str):
-    if auth != f"{USERNAME}:{PASSWORD}":
+if not USERNAME or not PASSWORD:
+    raise Exception("Faltan variables CRM_USER o CRM_PASS")
+
+security = HTTPBasic()
+
+def verificar_login(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_user = secrets.compare_digest(credentials.username, USERNAME)
+    correct_pass = secrets.compare_digest(credentials.password, PASSWORD)
+
+    if not (correct_user and correct_pass):
         raise HTTPException(status_code=401, detail="No autorizado")
+
+    return credentials.username
 
 
 # =========================
@@ -300,13 +312,11 @@ def recibir_paciente(paciente: Paciente):
 
 
 # =========================
-# 🔒 ENDPOINTS PROTEGIDOS
+# 🔒 ENDPOINTS PROTEGIDOS (LOGIN REAL)
 # =========================
 
 @app.get("/leads/medicos")
-def obtener_medicos(authorization: str = Header(None)):
-
-    verificar_auth(authorization)
+def obtener_medicos(user: str = Depends(verificar_login)):
 
     try:
         with open("data/medicos.json", "r") as f:
@@ -316,9 +326,7 @@ def obtener_medicos(authorization: str = Header(None)):
 
 
 @app.get("/leads/pacientes")
-def obtener_pacientes(authorization: str = Header(None)):
-
-    verificar_auth(authorization)
+def obtener_pacientes(user: str = Depends(verificar_login)):
 
     try:
         with open("data/pacientes.json", "r") as f:
@@ -328,7 +336,7 @@ def obtener_pacientes(authorization: str = Header(None)):
 
 
 @app.put("/leads/actualizar")
-def actualizar_lead(tipo: str, index: int):
+def actualizar_lead(tipo: str, index: int, user: str = Depends(verificar_login)):
 
     archivo = f"data/{tipo}.json"
 
