@@ -126,7 +126,7 @@ async function marcarContactado(tipo, index){
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                "authorization": localStorage.getItem("auth")
+                "authorization": auth
             }
         });
 
@@ -137,7 +137,6 @@ async function marcarContactado(tipo, index){
             return;
         }
 
-        // 🔄 Recargar datos
         if(tipo === "medicos"){
             await cargarMedicos();
         } else {
@@ -193,15 +192,15 @@ function renderMedicos(lista){
 
         tbody.innerHTML += `
         <tr>
-        <td>${m.nombre}</td>
-        <td>${m.clinica}</td>
-        <td>${m.email}</td>
-        <td>${m.telefono}</td>
+        <td>${m.nombre || ""}</td>
+        <td>${m.clinica || ""}</td>
+        <td>${m.email || ""}</td>
+        <td>${m.telefono || ""}</td>
         <td class="${prioridad.toLowerCase()}">${prioridad}</td>
         <td class="${estado==='CONTACTADO'?'contactado':''}">
             ${estado}
         </td>
-        <td>${m.fecha}</td>
+        <td>${m.fecha || ""}</td>
         <td>
             <button class="small" onclick="marcarContactado('medicos', ${indexOriginal})">
             Contactado
@@ -228,15 +227,15 @@ function renderPacientes(lista){
 
         tbody.innerHTML += `
         <tr>
-        <td>${p.nombre}</td>
-        <td>${p.email}</td>
-        <td>${p.talla}</td>
-        <td>${p.movilidad}</td>
+        <td>${p.nombre || ""}</td>
+        <td>${p.email || ""}</td>
+        <td>${p.talla || ""}</td>
+        <td>${p.movilidad || ""}</td>
         <td class="${prioridad.toLowerCase()}">${prioridad}</td>
         <td class="${estado==='CONTACTADO'?'contactado':''}">
             ${estado}
         </td>
-        <td>${p.fecha}</td>
+        <td>${p.fecha || ""}</td>
         <td>
             <button class="small" onclick="marcarContactado('pacientes', ${indexOriginal})">
             Contactado
@@ -252,7 +251,7 @@ function renderPacientes(lista){
 
 function filtrarMedicos(){
 
-    const texto = buscarMedicos.value.toLowerCase();
+    const texto = (buscarMedicos.value || "").toLowerCase();
     const prioridad = filtroMedicos.value;
 
     const filtrados = medicosData.filter(m => {
@@ -260,9 +259,9 @@ function filtrarMedicos(){
         const p = m.prioridad || "BAJO";
 
         const coincideTexto =
-            m.nombre.toLowerCase().includes(texto) ||
-            m.email.toLowerCase().includes(texto) ||
-            m.clinica.toLowerCase().includes(texto);
+            (m.nombre || "").toLowerCase().includes(texto) ||
+            (m.email || "").toLowerCase().includes(texto) ||
+            (m.clinica || "").toLowerCase().includes(texto);
 
         const coincidePrioridad =
             prioridad === "" || p === prioridad;
@@ -275,7 +274,7 @@ function filtrarMedicos(){
 
 function filtrarPacientes(){
 
-    const texto = buscarPacientes.value.toLowerCase();
+    const texto = (buscarPacientes.value || "").toLowerCase();
     const prioridad = filtroPacientes.value;
 
     const filtrados = pacientesData.filter(p => {
@@ -283,8 +282,8 @@ function filtrarPacientes(){
         const pr = p.prioridad || "BAJO";
 
         const coincideTexto =
-            p.nombre.toLowerCase().includes(texto) ||
-            p.email.toLowerCase().includes(texto);
+            (p.nombre || "").toLowerCase().includes(texto) ||
+            (p.email || "").toLowerCase().includes(texto);
 
         const coincidePrioridad =
             prioridad === "" || pr === prioridad;
@@ -305,6 +304,11 @@ async function cargarMedicos(){
         headers:{authorization:auth}
     });
 
+    if(!res.ok){
+        console.error("Error cargando médicos");
+        return;
+    }
+
     medicosData = await res.json();
     renderMedicos(medicosData);
 }
@@ -314,6 +318,11 @@ async function cargarPacientes(){
     const res = await fetch("https://vasagio-production.up.railway.app/leads/pacientes",{
         headers:{authorization:auth}
     });
+
+    if(!res.ok){
+        console.error("Error cargando pacientes");
+        return;
+    }
 
     pacientesData = await res.json();
     renderPacientes(pacientesData);
