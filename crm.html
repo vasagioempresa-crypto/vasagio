@@ -104,7 +104,6 @@ th {background:#2f6fe4;color:white;}
 // CONFIG
 // ======================
 
-const auth = "admin:vasagio123";
 const CALENDLY_LINK = "AQUI_TU_LINK";
 
 let medicosData = [];
@@ -133,11 +132,7 @@ async function marcarContactado(tipo, index){
     try {
 
         const res = await fetch(`https://vasagio-production.up.railway.app/leads/actualizar?tipo=${tipo}&index=${index}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": auth
-            }
+            method: "PUT"
         });
 
         const data = await res.json();
@@ -168,11 +163,7 @@ async function marcarAgendado(tipo, index){
     try {
 
         const res = await fetch(`https://vasagio-production.up.railway.app/leads/actualizar?tipo=${tipo}&index=${index}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": auth
-            }
+            method: "PUT"
         });
 
         const data = await res.json();
@@ -361,9 +352,7 @@ function filtrarPacientes(){
 
 async function cargarMedicos(){
 
-    const res = await fetch("https://vasagio-production.up.railway.app/leads/medicos",{
-        headers:{authorization:auth}
-    });
+    const res = await fetch("https://vasagio-production.up.railway.app/leads/medicos");
 
     if(!res.ok){
         console.error("Error cargando médicos");
@@ -376,9 +365,7 @@ async function cargarMedicos(){
 
 async function cargarPacientes(){
 
-    const res = await fetch("https://vasagio-production.up.railway.app/leads/pacientes",{
-        headers:{authorization:auth}
-    });
+    const res = await fetch("https://vasagio-production.up.railway.app/leads/pacientes");
 
     if(!res.ok){
         console.error("Error cargando pacientes");
