@@ -11,11 +11,11 @@ from email.mime.text import MIMEText
 app = FastAPI()
 
 # =========================
-# CONFIGURACIÓN EMAIL
+# CONFIGURACIÓN EMAIL (PRODUCCIÓN)
 # =========================
 
-EMAIL_ORIGEN = "vasagioempresa@gmail.com"
-EMAIL_PASSWORD = "sapq muri yaqh xyza"
+EMAIL_ORIGEN = os.getenv("EMAIL_ORIGEN", "vasagioempresa@gmail.com")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "sapq muri yaqh xyza")
 
 def enviar_email(asunto, contenido):
     try:
@@ -28,8 +28,10 @@ def enviar_email(asunto, contenido):
             server.login(EMAIL_ORIGEN, EMAIL_PASSWORD)
             server.send_message(msg)
 
+        print("EMAIL ENVIADO CORRECTAMENTE")
+
     except Exception as e:
-        print("ERROR EMAIL:", e)
+        print("ERROR EMAIL:", str(e))
 
 
 # =========================
@@ -150,12 +152,10 @@ def recibir_medico(medico: Medico):
 
     data = medico.dict()
 
-    # 🔥 PRIORIDAD
     data["prioridad"] = clasificar_lead_medico(data)
 
     guardar_dato(data, "medicos.json")
 
-    # 📩 EMAIL
     asunto = f"[{data['prioridad']}] Nuevo lead médico - VASAGIO"
 
     contenido = f"""
@@ -173,7 +173,10 @@ def recibir_medico(medico: Medico):
 
     enviar_email(asunto, contenido)
 
-    return {"status": "ok", "message": "Información médica recibida correctamente"}
+    return {
+        "status": "ok",
+        "message": "Información médica recibida correctamente"
+    }
 
 
 @app.post("/paciente")
@@ -181,12 +184,10 @@ def recibir_paciente(paciente: Paciente):
 
     data = paciente.dict()
 
-    # 🔥 PRIORIDAD
     data["prioridad"] = clasificar_lead_paciente(data)
 
     guardar_dato(data, "pacientes.json")
 
-    # 📩 EMAIL
     asunto = f"[{data['prioridad']}] Nuevo paciente - VASAGIO"
 
     contenido = f"""
@@ -203,7 +204,10 @@ def recibir_paciente(paciente: Paciente):
 
     enviar_email(asunto, contenido)
 
-    return {"status": "ok", "message": "Solicitud recibida correctamente"}
+    return {
+        "status": "ok",
+        "message": "Solicitud recibida correctamente"
+    }
 
 
 # =========================
@@ -232,6 +236,8 @@ def obtener_pacientes(authorization: str = Header(None)):
             return json.load(f)
     except:
         return []
+
+
 @app.put("/leads/actualizar")
 def actualizar_lead(tipo: str, index: int):
 
@@ -253,6 +259,8 @@ def actualizar_lead(tipo: str, index: int):
 
     except Exception as e:
         return {"error": str(e)}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
