@@ -14,18 +14,21 @@ app = FastAPI()
 # CONFIGURACIÓN EMAIL (PRODUCCIÓN)
 # =========================
 
-EMAIL_ORIGEN = os.getenv("EMAIL_ORIGEN", "vasagioempresa@gmail.com")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "sapq muri yaqh xyza")
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+if not EMAIL_USER or not EMAIL_PASSWORD:
+    raise Exception("Faltan variables de entorno EMAIL_USER o EMAIL_PASSWORD")
 
 def enviar_email(asunto, contenido):
     try:
         msg = MIMEText(contenido)
         msg["Subject"] = asunto
-        msg["From"] = EMAIL_ORIGEN
-        msg["To"] = EMAIL_ORIGEN
+        msg["From"] = EMAIL_USER
+        msg["To"] = EMAIL_USER
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(EMAIL_ORIGEN, EMAIL_PASSWORD)
+            server.login(EMAIL_USER, EMAIL_PASSWORD)
             server.send_message(msg)
 
         print("EMAIL ENVIADO CORRECTAMENTE")
