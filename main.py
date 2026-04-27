@@ -23,6 +23,10 @@ if not RESEND_API_KEY:
     raise Exception("Falta variable de entorno RESEND_API_KEY")
 
 
+# =========================
+# EMAIL INTERNO (PARA TI)
+# =========================
+
 def enviar_email(asunto, contenido):
     try:
         response = requests.post(
@@ -39,10 +43,36 @@ def enviar_email(asunto, contenido):
             }
         )
 
-        print("RESPUESTA RESEND:", response.text)
+        print("EMAIL INTERNO:", response.text)
 
     except Exception as e:
-        print("ERROR EMAIL RESEND:", str(e))
+        print("ERROR EMAIL INTERNO:", str(e))
+
+
+# =========================
+# EMAIL AUTOMÁTICO AL USUARIO (NUEVO)
+# =========================
+
+def enviar_email_usuario(destino, asunto, contenido):
+    try:
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": "VASAGIO <onboarding@resend.dev>",
+                "to": [destino],
+                "subject": asunto,
+                "html": contenido.replace("\n", "<br>")
+            }
+        )
+
+        print("EMAIL USUARIO:", response.text)
+
+    except Exception as e:
+        print("ERROR EMAIL USUARIO:", str(e))
 
 
 # =========================
@@ -158,6 +188,10 @@ def root():
     return {"message": "VASAGIO API funcionando correctamente"}
 
 
+# =========================
+# MÉDICO
+# =========================
+
 @app.post("/medico")
 def recibir_medico(medico: Medico):
 
@@ -167,6 +201,7 @@ def recibir_medico(medico: Medico):
 
     guardar_dato(data, "medicos.json")
 
+    # EMAIL INTERNO
     asunto = f"[{data['prioridad']}] Nuevo lead médico - VASAGIO"
 
     contenido = f"""
@@ -184,11 +219,34 @@ def recibir_medico(medico: Medico):
 
     enviar_email(asunto, contenido)
 
+    # EMAIL AUTOMÁTICO AL MÉDICO
+    contenido_usuario = f"""
+    Hola {data['nombre']},
+
+    Gracias por tu interés en colaborar con VASAGIO.
+
+    Hemos recibido tu solicitud y estaremos revisando la mejor forma de colaborar contigo.
+
+    En breve nos pondremos en contacto contigo.
+
+    Equipo VASAGIO
+    """
+
+    enviar_email_usuario(
+        destino=data["email"],
+        asunto="Hemos recibido tu solicitud – VASAGIO",
+        contenido=contenido_usuario
+    )
+
     return {
         "status": "ok",
         "message": "Información médica recibida correctamente"
     }
 
+
+# =========================
+# PACIENTE
+# =========================
 
 @app.post("/paciente")
 def recibir_paciente(paciente: Paciente):
@@ -199,6 +257,7 @@ def recibir_paciente(paciente: Paciente):
 
     guardar_dato(data, "pacientes.json")
 
+    # EMAIL INTERNO
     asunto = f"[{data['prioridad']}] Nuevo paciente - VASAGIO"
 
     contenido = f"""
@@ -214,6 +273,25 @@ def recibir_paciente(paciente: Paciente):
     """
 
     enviar_email(asunto, contenido)
+
+    # EMAIL AUTOMÁTICO AL PACIENTE
+    contenido_usuario = f"""
+    Hola {data['nombre']},
+
+    Gracias por contactar a VASAGIO.
+
+    Ya recibimos tu solicitud y estamos analizando tu caso según tu nivel de movilidad ({data['movilidad']}).
+
+    En breve nos pondremos en contacto contigo.
+
+    Equipo VASAGIO
+    """
+
+    enviar_email_usuario(
+        destino=data["email"],
+        asunto="Hemos recibido tu solicitud – VASAGIO",
+        contenido=contenido_usuario
+    )
 
     return {
         "status": "ok",
