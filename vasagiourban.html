@@ -152,42 +152,52 @@
 <script>
 
 // =========================
-// SLIDER
+// SLIDER (CORREGIDO PARA EVITAR ERRORES)
 // =========================
 
-const slides = document.querySelectorAll(".slide");
-let current = 0;
+document.addEventListener("DOMContentLoaded", () => {
 
-function showSlide(index){
+    const slides = document.querySelectorAll(".slide");
+    const nextBtn = document.querySelector(".next");
+    const prevBtn = document.querySelector(".prev");
+
+    let current = 0;
+
+    function showSlide(index){
+        slides.forEach((slide)=>{
+            slide.classList.remove("active");
+        });
+
+        if (slides[index]) {
+            slides[index].classList.add("active");
+        }
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener("click", ()=>{
+            current = (current + 1) % slides.length;
+            showSlide(current);
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener("click", ()=>{
+            current = (current - 1 + slides.length) % slides.length;
+            showSlide(current);
+        });
+    }
+
     slides.forEach((slide)=>{
-        slide.classList.remove("active");
+        slide.addEventListener("click", ()=>{
+            current = (current + 1) % slides.length;
+            showSlide(current);
+        });
     });
 
-    setTimeout(()=>{
-        slides[index].classList.add("active");
-    }, 50);
-}
-
-document.querySelector(".next").addEventListener("click", ()=>{
-    current = (current + 1) % slides.length;
-    showSlide(current);
 });
-
-document.querySelector(".prev").addEventListener("click", ()=>{
-    current = (current - 1 + slides.length) % slides.length;
-    showSlide(current);
-});
-
-slides.forEach((slide)=>{
-    slide.addEventListener("click", ()=>{
-        current = (current + 1) % slides.length;
-        showSlide(current);
-    });
-});
-
 
 // =========================
-// FORMULARIO FINAL PRODUCCIÓN
+// FORMULARIO PACIENTE (CORREGIDO)
 // =========================
 
 document.getElementById("pacienteForm").addEventListener("submit", async function(e){
@@ -202,8 +212,8 @@ document.getElementById("pacienteForm").addEventListener("submit", async functio
         nombre: formData.nombre,
         email: formData.email,
         talla: formData.talla,
-        movilidad: formData.nivel,
-        mensaje: formData.mensaje
+        movilidad: formData.nivel, // 🔥 CORRECCIÓN CLAVE
+        mensaje: formData.mensaje || ""
     };
 
     console.log("PACIENTE DATA:", data);
