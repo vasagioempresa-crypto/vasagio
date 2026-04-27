@@ -107,9 +107,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("DATOS MEDICO:", data);
 
-        // 🔒 VALIDACIÓN EXTRA TELEFONO (evita 422)
-        if (!/^\d{10}$/.test(data.telefono)) {
+        // 🔒 VALIDACIÓN TELEFONO
+        if (!/^\d{10}$/.test(data.telefono || "")) {
             msg.innerText = "❌ El teléfono debe tener 10 dígitos";
+            return;
+        }
+
+        // 🔒 VALIDACIÓN EXTRA (evita errores backend)
+        if (!data.nombre || !data.clinica || !data.email || !data.interes) {
+            msg.innerText = "❌ Completa todos los campos obligatorios";
             return;
         }
 
@@ -123,12 +129,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(data)
             });
 
-            const result = await res.json();
+            let result = {};
+
+            try {
+                result = await res.json();
+            } catch {
+                console.warn("Respuesta no es JSON");
+            }
 
             console.log("RESPUESTA BACKEND:", result);
 
             if (!res.ok) {
-                msg.innerText = "❌ " + (result.detail?.[0]?.msg || "Error en el servidor");
+                msg.innerText = "❌ " + (result.detail?.[0]?.msg || result.message || "Error en el servidor");
                 return;
             }
 
