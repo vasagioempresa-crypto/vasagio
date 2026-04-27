@@ -58,8 +58,11 @@
     <form id="medicoForm">
 
         <input name="nombre" placeholder="Nombre del doctor" required>
+
         <input name="clinica" placeholder="Nombre de la clínica" required>
+
         <input type="email" name="email" placeholder="Correo electrónico" required>
+
         <input name="telefono" placeholder="Teléfono (10 dígitos)" required>
 
         <select name="interes" required>
@@ -69,7 +72,7 @@
             <option value="alianza">Alianza</option>
         </select>
 
-        <textarea name="mensaje"></textarea>
+        <textarea name="mensaje" placeholder="Detalles adicionales"></textarea>
 
         <button type="submit" class="primary">Enviar solicitud</button>
 
@@ -102,31 +105,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = Object.fromEntries(new FormData(form).entries());
 
-        console.log("Datos enviados:", data);
+        console.log("DATOS MEDICO:", data);
+
+        // 🔒 VALIDACIÓN EXTRA TELEFONO (evita 422)
+        if (!/^\d{10}$/.test(data.telefono)) {
+            msg.innerText = "❌ El teléfono debe tener 10 dígitos";
+            return;
+        }
 
         try {
 
             const res = await fetch("https://vasagio-production.up.railway.app/medico", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify(data)
             });
 
             const result = await res.json();
 
-            console.log("Respuesta:", result);
+            console.log("RESPUESTA BACKEND:", result);
 
             if (!res.ok) {
-                msg.innerText = "❌ " + (result.detail?.[0]?.msg || "Error en datos");
+                msg.innerText = "❌ " + (result.detail?.[0]?.msg || "Error en el servidor");
                 return;
             }
 
             msg.innerText = "✔ Solicitud enviada correctamente";
+
             form.reset();
 
         } catch (error) {
-            console.error("Error:", error);
-            msg.innerText = "❌ Error conectando con servidor";
+
+            console.error("ERROR:", error);
+
+            msg.innerText = "❌ Error conectando con el servidor";
         }
 
     });
