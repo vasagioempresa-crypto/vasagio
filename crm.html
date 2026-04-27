@@ -7,22 +7,15 @@
 <link rel="stylesheet" href="styles.css">
 
 <style>
-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
-th { background: #1f6feb; color: white; }
-
-.alto {color: red; font-weight: bold;}
-.medio {color: orange; font-weight: bold;}
-.bajo {color: gray;}
-.contactado { color: green; font-weight: bold; }
-
-.filtros { margin-top: 20px; display: flex; gap: 10px; }
-
-button.small {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    cursor: pointer;
-}
+.container {max-width:1200px;margin:auto;}
+table {width:100%;border-collapse:collapse;margin-top:20px;}
+th, td {padding:10px;border-bottom:1px solid #ddd;text-align:left;}
+th {background:#2f6fe4;color:white;}
+.small {padding:5px 10px;margin:2px;}
+.alto {color:red;font-weight:bold;}
+.medio {color:orange;font-weight:bold;}
+.bajo {color:gray;}
+.contactado {color:green;font-weight:bold;}
 </style>
 
 </head>
@@ -31,22 +24,24 @@ button.small {
 
 <header class="navbar">
 <div class="nav-container">
+
 <div class="logo">
 <a href="index.html">
 <img src="assets/images/logo.png">
 </a>
 </div>
+
 <nav>
 <a href="index.html">Inicio</a>
 </nav>
+
 </div>
 </header>
 
-<section class="container">
+<div class="container">
 
 <h2>Leads Médicos</h2>
 
-<div class="filtros">
 <input id="buscarMedicos" placeholder="Buscar médico...">
 <select id="filtroMedicos">
 <option value="">Todas prioridades</option>
@@ -54,8 +49,8 @@ button.small {
 <option value="MEDIO">MEDIO</option>
 <option value="BAJO">BAJO</option>
 </select>
-<button onclick="exportarCSV(medicosData,'medicos')" class="primary">Exportar</button>
-</div>
+
+<button onclick="exportarCSV(medicosData,'medicos')">Exportar</button>
 
 <table id="tablaMedicos">
 <thead>
@@ -75,7 +70,6 @@ button.small {
 
 <h2>Leads Pacientes</h2>
 
-<div class="filtros">
 <input id="buscarPacientes" placeholder="Buscar paciente...">
 <select id="filtroPacientes">
 <option value="">Todas prioridades</option>
@@ -83,8 +77,8 @@ button.small {
 <option value="MEDIO">MEDIO</option>
 <option value="BAJO">BAJO</option>
 </select>
-<button onclick="exportarCSV(pacientesData,'pacientes')" class="primary">Exportar</button>
-</div>
+
+<button onclick="exportarCSV(pacientesData,'pacientes')">Exportar</button>
 
 <table id="tablaPacientes">
 <thead>
@@ -102,27 +96,78 @@ button.small {
 <tbody></tbody>
 </table>
 
-</section>
+</div>
 
 <script>
 
-// 🔐 LOGIN
-const auth = localStorage.getItem("auth");
-if (!auth) window.location.href = "login.html";
+// ======================
+// CONFIG
+// ======================
 
-// 🔥 VARIABLES
+const auth = "admin:vasagio123";
+const CALENDLY_LINK = "AQUI_TU_LINK";
+
 let medicosData = [];
 let pacientesData = [];
 
+const buscarMedicos = document.getElementById("buscarMedicos");
+const filtroMedicos = document.getElementById("filtroMedicos");
+
+const buscarPacientes = document.getElementById("buscarPacientes");
+const filtroPacientes = document.getElementById("filtroPacientes");
+
 // ======================
-// ACTUALIZAR ESTADO
+// AGENDAR CITA
+// ======================
+
+function agendarCita(tipo, index){
+    window.open(CALENDLY_LINK, "_blank");
+}
+
+// ======================
+// MARCAR CONTACTADO
 // ======================
 
 async function marcarContactado(tipo, index){
 
     try {
 
-        const res = await fetch(`https://vasagio-production.up.railway.app/leads/actualizar?tipo=${tipo}&index=${index}`,{
+        const res = await fetch(`https://vasagio-production.up.railway.app/leads/actualizar?tipo=${tipo}&index=${index}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": auth
+            }
+        });
+
+        const data = await res.json();
+
+        if(!res.ok){
+            alert("Error al actualizar: " + (data.detail || "Error desconocido"));
+            return;
+        }
+
+        if(tipo === "medicos"){
+            await cargarMedicos();
+        } else {
+            await cargarPacientes();
+        }
+
+    } catch(error){
+        console.error("Error:", error);
+        alert("Error conectando con el servidor");
+    }
+}
+
+// ======================
+// MARCAR AGENDADO
+// ======================
+
+async function marcarAgendado(tipo, index){
+
+    try {
+
+        const res = await fetch(`https://vasagio-production.up.railway.app/leads/actualizar?tipo=${tipo}&index=${index}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -205,6 +250,14 @@ function renderMedicos(lista){
             <button class="small" onclick="marcarContactado('medicos', ${indexOriginal})">
             Contactado
             </button>
+
+            <button class="small" onclick="agendarCita('medicos', ${indexOriginal})">
+            Agendar
+            </button>
+
+            <button class="small" onclick="marcarAgendado('medicos', ${indexOriginal})">
+            Agendado
+            </button>
         </td>
         </tr>`;
     });
@@ -239,6 +292,14 @@ function renderPacientes(lista){
         <td>
             <button class="small" onclick="marcarContactado('pacientes', ${indexOriginal})">
             Contactado
+            </button>
+
+            <button class="small" onclick="agendarCita('pacientes', ${indexOriginal})">
+            Agendar
+            </button>
+
+            <button class="small" onclick="marcarAgendado('pacientes', ${indexOriginal})">
+            Agendado
             </button>
         </td>
         </tr>`;
