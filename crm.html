@@ -120,12 +120,34 @@ let pacientesData = [];
 
 async function marcarContactado(tipo, index){
 
-    await fetch(`http://127.0.0.1:8000/leads/actualizar?tipo=${tipo}&index=${index}`,{
-        method:"PUT"
-    });
+    try {
 
-    if(tipo === "medicos") await cargarMedicos();
-    else await cargarPacientes();
+        const res = await fetch(`https://vasagio-production.up.railway.app/leads/actualizar?tipo=${tipo}&index=${index}`,{
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": localStorage.getItem("auth")
+            }
+        });
+
+        const data = await res.json();
+
+        if(!res.ok){
+            alert("Error al actualizar: " + (data.detail || "Error desconocido"));
+            return;
+        }
+
+        // 🔄 Recargar datos
+        if(tipo === "medicos"){
+            await cargarMedicos();
+        } else {
+            await cargarPacientes();
+        }
+
+    } catch(error){
+        console.error("Error:", error);
+        alert("Error conectando con el servidor");
+    }
 }
 
 // ======================

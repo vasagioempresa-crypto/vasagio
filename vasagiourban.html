@@ -126,8 +126,8 @@
             <option value="grande">Grande</option>
         </select>
 
-        <select name="movilidad" required>
-            <option value="">Nivel de movilidad</option>
+        <select name="nivel" required>
+            <option value="">Selecciona tu nivel</option>
             <option value="V1">V1</option>
             <option value="V2">V2</option>
             <option value="V3">V3</option>
@@ -151,12 +151,14 @@
 
 <script>
 
+// =========================
 // SLIDER
+// =========================
+
 const slides = document.querySelectorAll(".slide");
 let current = 0;
 
 function showSlide(index){
-
     slides.forEach((slide)=>{
         slide.classList.remove("active");
     });
@@ -166,19 +168,16 @@ function showSlide(index){
     }, 50);
 }
 
-// SIGUIENTE
 document.querySelector(".next").addEventListener("click", ()=>{
     current = (current + 1) % slides.length;
     showSlide(current);
 });
 
-// ANTERIOR
 document.querySelector(".prev").addEventListener("click", ()=>{
     current = (current - 1 + slides.length) % slides.length;
     showSlide(current);
 });
 
-// CLICK EN IMAGEN
 slides.forEach((slide)=>{
     slide.addEventListener("click", ()=>{
         current = (current + 1) % slides.length;
@@ -187,29 +186,57 @@ slides.forEach((slide)=>{
 });
 
 
-// FORMULARIO
+// =========================
+// FORMULARIO CORREGIDO
+// =========================
+
 document.getElementById("pacienteForm").addEventListener("submit", async function(e){
 
     e.preventDefault();
 
+    const msg = document.getElementById("msgPaciente");
+
     const data = Object.fromEntries(new FormData(this).entries());
+
+    // DEBUG
+    console.log("PACIENTE DATA:", data);
+
+    // VALIDACIÓN
+    if (!data.nivel || data.nivel === "") {
+        msg.innerText = "❌ Selecciona tu nivel de movilidad";
+        return;
+    }
+
+    msg.innerText = "Enviando...";
 
     try {
 
-        const res = await fetch("https://vasagio-production.up.railway.app/medico", {
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify(data)
+        const res = await fetch("https://vasagio-production.up.railway.app/paciente", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         });
 
         const result = await res.json();
 
-        document.getElementById("msgPaciente").innerText = result.message;
+        console.log("RESPUESTA BACKEND:", result);
+
+        if (!res.ok) {
+            msg.innerText = "❌ Error en el servidor";
+            return;
+        }
+
+        msg.innerText = "✔ Solicitud enviada correctamente";
 
         this.reset();
 
-    } catch {
-        document.getElementById("msgPaciente").innerText = "✔ Hemos recibido tu información. Nuestro equipo te contactará.";
+    } catch (error) {
+
+        console.error("ERROR:", error);
+
+        msg.innerText = "❌ Error de conexión con el servidor";
     }
 
 });
