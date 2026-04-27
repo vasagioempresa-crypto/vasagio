@@ -196,13 +196,20 @@ document.getElementById("pacienteForm").addEventListener("submit", async functio
 
     const msg = document.getElementById("msgPaciente");
 
-    const data = Object.fromEntries(new FormData(this).entries());
+    const formData = Object.fromEntries(new FormData(this).entries());
 
-    // DEBUG
+    // 🔥 CORRECCIÓN CLAVE (nivel → movilidad)
+    const data = {
+        nombre: formData.nombre,
+        email: formData.email,
+        talla: formData.talla,
+        movilidad: formData.nivel,
+        mensaje: formData.mensaje
+    };
+
     console.log("PACIENTE DATA:", data);
 
-    // VALIDACIÓN
-    if (!data.nivel || data.nivel === "") {
+    if (!data.movilidad || data.movilidad === "") {
         msg.innerText = "❌ Selecciona tu nivel de movilidad";
         return;
     }
@@ -224,7 +231,7 @@ document.getElementById("pacienteForm").addEventListener("submit", async functio
         console.log("RESPUESTA BACKEND:", result);
 
         if (!res.ok) {
-            msg.innerText = "❌ Error en el servidor";
+            msg.innerText = "❌ " + (result.detail?.[0]?.msg || "Error en el servidor");
             return;
         }
 
